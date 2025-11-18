@@ -217,3 +217,161 @@ WHERE percentage > 70;
     salary NUMERIC(10,2)
 );
 </code></pre>
+<h2>1️⃣ Auto-Increment Keys (SERIAL / BIGSERIAL)</h2>
+
+<pre><code>CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50),
+    salary NUMERIC(10,2)
+);
+</code></pre>
+
+<h3>Alternative using IDENTITY (recommended)</h3>
+
+<pre><code>CREATE TABLE employees (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(50)
+);
+</code></pre>
+
+<hr>
+
+<h2>2️⃣ Default Values</h2>
+
+<pre><code>ALTER TABLE student 
+ADD COLUMN created_at TIMESTAMP DEFAULT NOW();
+</code></pre>
+
+<hr>
+
+<h2>3️⃣ Check Constraints</h2>
+
+<pre><code>ALTER TABLE student 
+ADD CONSTRAINT chk_percentage CHECK (percentage BETWEEN 0 AND 100);
+</code></pre>
+
+<hr>
+
+<h2>4️⃣ Foreign Key Constraint</h2>
+
+<pre><code>CREATE TABLE department (
+    dept_id SERIAL PRIMARY KEY,
+    dept_name VARCHAR(50)
+);
+
+CREATE TABLE employee (
+    emp_id SERIAL PRIMARY KEY,
+    emp_name VARCHAR(50),
+    dept_id INT REFERENCES department(dept_id)
+);
+</code></pre>
+
+<hr>
+
+<h2>5️⃣ Sorting, Limiting & Pagination</h2>
+
+<pre><code>SELECT * FROM student ORDER BY percentage DESC;
+SELECT * FROM student LIMIT 5;
+SELECT * FROM student OFFSET 10 LIMIT 5;
+</code></pre>
+
+<hr>
+
+<h2>6️⃣ Pattern Searching (LIKE / ILIKE)</h2>
+
+<pre><code>SELECT * FROM student WHERE name LIKE 'A%';     -- case sensitive
+SELECT * FROM student WHERE name ILIKE 'a%';    -- case insensitive
+</code></pre>
+
+<hr>
+
+<h2>7️⃣ Aggregate Functions</h2>
+
+<pre><code>SELECT COUNT(*) FROM student;
+SELECT AVG(percentage) FROM student;
+SELECT MAX(percentage) FROM student;
+SELECT MIN(percentage) FROM student;
+</code></pre>
+
+<hr>
+
+<h2>8️⃣ Group By & Having</h2>
+
+<pre><code>SELECT gender, COUNT(*) 
+FROM student 
+GROUP BY gender;
+
+SELECT address, AVG(percentage)
+FROM student
+GROUP BY address
+HAVING AVG(percentage) > 70;
+</code></pre>
+
+<hr>
+
+<h2>9️⃣ Creating Indexes (for performance)</h2>
+
+<pre><code>CREATE INDEX idx_student_name ON student(name);
+CREATE UNIQUE INDEX idx_email_unique ON student(email_id);
+</code></pre>
+
+<hr>
+
+<h2>🔟 Views</h2>
+
+<pre><code>CREATE VIEW high_scores AS
+SELECT rollno, name, percentage
+FROM student
+WHERE percentage > 75;
+
+SELECT * FROM high_scores;
+</code></pre>
+
+<hr>
+
+<h2>1️⃣1️⃣ Copy CSV (Import / Export)</h2>
+
+<h3>Export Table → CSV</h3>
+<pre><code>COPY student TO '/tmp/student.csv' CSV HEADER;
+</code></pre>
+
+<h3>Import CSV → Table</h3>
+<pre><code>COPY student FROM '/tmp/student.csv' CSV HEADER;
+</code></pre>
+
+<hr>
+
+<h2>1️⃣2️⃣ Transactions (BEGIN / COMMIT / ROLLBACK)</h2>
+
+<pre><code>BEGIN;
+UPDATE student SET percentage = 100 WHERE rollno = 101;
+ROLLBACK;   -- undo changes
+
+BEGIN;
+UPDATE student SET percentage = 95 WHERE rollno = 102;
+COMMIT;     -- save changes
+</code></pre>
+
+<hr>
+
+<h2>1️⃣3️⃣ Creating Users & Granting Permissions</h2>
+
+<pre><code>CREATE USER deepak WITH PASSWORD '1234';
+
+GRANT ALL PRIVILEGES ON DATABASE mydb TO deepak;
+
+GRANT SELECT, INSERT ON student TO deepak;
+</code></pre>
+
+<hr>
+
+<h2>1️⃣4️⃣ Backup & Restore</h2>
+
+<h3>Backup a Database</h3>
+<pre><code>pg_dump mydb &gt; backup.sql
+</code></pre>
+
+<h3>Restore Database</h3>
+<pre><code>psql mydb &lt; backup.sql
+</code></pre>
+
