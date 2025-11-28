@@ -1,0 +1,105 @@
+================================
+PostgreSQL DDL ASSIGNMENT
+================================
+
+  1_view_databases:
+    question: "Login to MySQL and view all databases already present."
+    answer:
+      - "\\l"
+      - "SELECT datname FROM pg_database;"
+
+  2_create_countries_table:
+    question: "Create table countries with columns country_id, country_name, region_id."
+    answer: |
+      CREATE TABLE countries (
+          country_id   INT,
+          country_name VARCHAR(100),
+          region_id    INT
+      );
+      
+      -- View structure
+      \d countries;
+
+  3_create_jobs_with_constraints:
+    question: "Create jobs table with max_salary <= 25000, job_title NOT NULL, job_id PK."
+    answer: |
+      CREATE TABLE jobs (
+          job_id      INT PRIMARY KEY,
+          job_title   VARCHAR(100) NOT NULL,
+          min_salary  NUMERIC(10,2),
+          max_salary  NUMERIC(10,2) CHECK (max_salary <= 25000)
+      );
+
+  4_create_job_history:
+    question: "Create job_history table with employee_id, start_date, end_date, job_id, department_id."
+    answer: |
+      CREATE TABLE job_history (
+          employee_id   INT,
+          start_date    DATE,
+          end_date      DATE,
+          job_id        INT,
+          department_id INT
+      );
+
+  5_alter_countries_unique_country_id:
+    question: "Alter countries so country_id cannot have duplicate values."
+    answer: |
+      ALTER TABLE countries
+      ADD CONSTRAINT countries_country_id_uk UNIQUE (country_id);
+
+  6_create_jobs_default_table:
+    question: "Create jobs table with default job_title '', min_salary 8000, max_salary NULL."
+    answer: |
+      CREATE TABLE jobs_default (
+          job_id      INT PRIMARY KEY,
+          job_title   VARCHAR(100) DEFAULT '',
+          min_salary  NUMERIC(10,2) DEFAULT 8000,
+          max_salary  NUMERIC(10,2) DEFAULT NULL
+      );
+
+  7_create_departments_table:
+    question: "Create Department table (structure from assignment image)."
+    assumed_structure:
+      - department_id: INT PRIMARY KEY
+      - department_name: VARCHAR(100)
+      - manager_id: INT
+      - location_id: INT
+    answer: |
+      CREATE TABLE departments (
+          department_id   INT PRIMARY KEY,
+          department_name VARCHAR(100),
+          manager_id      INT,
+          location_id     INT
+      );
+
+  8_create_employees_with_composite_fk:
+    question: >
+      Create employees table where employee_id must be unique and composite FK
+      (department_id + manager_id) must exist in departments table.
+    steps:
+      step_1_add_composite_unique:
+        answer: |
+          ALTER TABLE departments
+          ADD CONSTRAINT departments_dept_mgr_uk UNIQUE (department_id, manager_id);
+
+      step_2_create_employees_table:
+        answer: |
+          CREATE TABLE employees (
+              employee_id   INT PRIMARY KEY,
+              first_name    VARCHAR(50),
+              last_name     VARCHAR(50),
+              email         VARCHAR(100),
+              phone_number  VARCHAR(20),
+              hire_date     DATE,
+              job_id        INT,
+              salary        NUMERIC(10,2),
+              commission    NUMERIC(10,2),
+              manager_id    INT,
+              department_id INT,
+              CONSTRAINT emp_dept_mgr_fk
+                FOREIGN KEY (department_id, manager_id)
+                REFERENCES departments (department_id, manager_id)
+          );
+================================
+END OF FILE
+================================
